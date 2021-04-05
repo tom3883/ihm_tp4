@@ -52,7 +52,8 @@ def setupScene():
     glEnable(GL_DEPTH_TEST)
     glClearColor(.4, .4, .4, 1)
 
-    global spheres, nb_spheres
+    global spheres, nb_spheres, cible
+    cible = 1
     nb_spheres = 9
     spheres = create_spheres()
 
@@ -77,15 +78,15 @@ def create_spheres():
 
 
 def setCible():
-
+    """
     for i in range(nb_spheres):
         proj = spheres[i].project(camera)
         display_2d_disc(*proj, [0,1,0,0])
 
-    """
     proj = spheres[0].project(camera)
     #0,1,0 couleur = verte
     display_2d_disc(*proj, [0,1,0])
+    """
 
     for i in range(nb_spheres):
         #Set the color to the new one
@@ -93,14 +94,12 @@ def setCible():
             index = nb_spheres-4
         else:
             index = i+4
-
         proj = spheres[i].project(camera)
         display_2d_disc(*proj, [0,1,0])
 
         #Previous  disc should become transparent
         prev_proj = spheres[index].project(camera)
         display_2d_disc(*prev_proj, [0,1,1])
-    """
 
 def mousePos():
     #GetCursorPos() => returns true
@@ -167,8 +166,6 @@ def display_scene(sphs):
         glTranslate(i.position[0], i.position[1], i.position[2])
         glutSolidSphere(i.radius, 50, 50)
         glPopMatrix()
-    
-    setCible()
 
 
 def display_2d_disc(p2d, r, c):
@@ -223,6 +220,7 @@ def display():
     #Frame
     display_frame()
     display_scene(spheres)
+
 
     #ind = closest_sphere(spheres, camera, mouse)
     #display_bubble(spheres[ind], mouse, [0, 2, 0, .2])
@@ -289,6 +287,14 @@ def mouse_clicks(button, state, x, y):
     '''
     global mouse
     mouse = [x, y]
+    pos_cible, radius = spheres[cible].project(camera)
+    
+    if(pos_cible[0] - radius < mouse[0] and pos_cible[0] + radius > mouse[0] and
+    pos_cible[1] + radius > mouse[1] and pos_cible[1] - radius < mouse[1]):
+        print("Clic sur cible")
+    else:
+        print("Clic ailleurs")
+
     glutPostRedisplay()
 
 
