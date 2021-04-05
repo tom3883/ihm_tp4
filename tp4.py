@@ -52,9 +52,10 @@ def setupScene():
     glEnable(GL_DEPTH_TEST)
     glClearColor(.4, .4, .4, 1)
 
-    global spheres, nb_spheres, cible
+    global spheres, nb_spheres, cible, clic_correct
     cible = 0
     nb_spheres = 9
+    clic_correct = False
     spheres = create_spheres()
 
 
@@ -86,20 +87,7 @@ def setDiscs():
     proj = spheres[0].project(camera)
     #0,1,0 couleur = verte
     display_2d_disc(*proj, [0,1,0])
-    """
-    for i in range(nb_spheres):
-        #Set the color to the new one
-        if((i+4)>nb_spheres-1):
-            index = nb_spheres-4
-        else:
-            index = i+4
-        proj = spheres[i].project(camera)
-        display_2d_disc(*proj, [0,1,0])
 
-        #Previous  disc should become transparent
-        prev_proj = spheres[index].project(camera)
-        display_2d_disc(*prev_proj, [0,1,1])
-    """
 
 def isCible(sphere):
     return sphere == spheres[cible]
@@ -107,14 +95,15 @@ def isCible(sphere):
 
 def nextCible():
     global cible
-    new_cible = cible
-    if((new_cible+4) >= nb_spheres):
-        new_cible = (new_cible + 4) - nb_spheres
+    if((cible+4) >= nb_spheres):
+        cible = (cible + 4) - nb_spheres
     else:
-        new_cible += 4
-    print(new_cible)
-    cible = new_cible
+        cible += 4
+    #print(new_cible)
 
+
+def timeElapsed():
+    pass
 
 def closest_sphere(sphs, cam, m):
     '''Returns the index of the sphere (in list 'sphs') whose projection is the closest to the 2D position 'm'
@@ -291,17 +280,22 @@ def mouse_clicks(button, state, x, y):
     button is in [GLUT_LEFT_BUTTON, GLUT_MIDDLE_BUTTON, GLUT_RIGHT_BUTTON],
     state is in [GLUT_DOWN, GLUT_UP]
     '''
-    global mouse
-    mouse = [x, y]
-    pos_cible, radius = spheres[cible].project(camera)
-    
-    if(pos_cible[0] - radius < mouse[0] and pos_cible[0] + radius > mouse[0] and
-    pos_cible[1] + radius > mouse[1] and pos_cible[1] - radius < mouse[1]):
-        nextCible()
-    else:
-        print("Clic ailleurs")
+    if state == GLUT_DOWN:
+        global mouse
+        global clic_correct
+        mouse = [x, y]
+        pos_cible, radius = spheres[cible].project(camera)
+        
+        if(pos_cible[0] - radius < mouse[0] and pos_cible[0] + radius > mouse[0] and
+        pos_cible[1] + radius > mouse[1] and pos_cible[1] - radius < mouse[1]):
+            nextCible()
+            clic_correct = True
+            print(clic_correct)
+        else:
+            clic_correct = False
+            print(clic_correct)
 
-    glutPostRedisplay()
+        glutPostRedisplay()
 
 
 def mouse_active(x, y):
