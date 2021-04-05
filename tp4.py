@@ -25,6 +25,12 @@ starting_time   = time.time()                       #starting time of course
 mouse           = [0, 0]                            #mouse current position
 animation       = False                             #(des)activating animation (juste for fun)
 spheres         = []                                #list of the spheres to select
+cible           = 0
+nb_spheres      = 9
+clic_correct    = False
+pointage        = 0
+seq             = 0
+ids             = [[1 ,0.5], [3 ,0.4], [2 ,0.6]]
 
 ################################################################################
 # SETUPS
@@ -45,17 +51,14 @@ def setupScene():
     glEnable(GL_CULL_FACE)
     glShadeModel(GL_SMOOTH)
     glEnable(GL_BLEND)
-    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
     glEnable(GL_NORMALIZE)
     glEnable(GL_COLOR_MATERIAL)
     glColorMaterial(GL_FRONT,GL_AMBIENT_AND_DIFFUSE)
     glEnable(GL_DEPTH_TEST)
     glClearColor(.4, .4, .4, 1)
 
-    global spheres, nb_spheres, cible, clic_correct
-    cible = 0
-    nb_spheres = 9
-    clic_correct = False
+    global spheres
     spheres = create_spheres()
 
 
@@ -69,12 +72,12 @@ def create_spheres():
     #TODO_TODO_TODO
     #TODO_TODO_TODO
     posx, posy = 0,0
-    radius = 3
+    radius = ids[seq][0]
     s = []
     for i in range(nb_spheres):
         cosine = radius * cos(i*2*pi/nb_spheres) + posx
         sine = radius * sin(i*2*pi/nb_spheres) + posy
-        s.append(_sph.sphere([cosine, sine, 0], 0.5))
+        s.append(_sph.sphere([cosine, sine, 0], ids[seq][1]))
     return s
 
 
@@ -101,6 +104,14 @@ def nextCible():
         cible += 4
     #print(new_cible)
 
+def nextSeq():
+    global seq, spheres
+    if(seq+1 < len(ids)):
+        seq += 1
+    else:
+        seq = 0
+    print(str(seq))
+    spheres = create_spheres()
 
 def timeElapsed():
     pass
@@ -281,8 +292,7 @@ def mouse_clicks(button, state, x, y):
     state is in [GLUT_DOWN, GLUT_UP]
     '''
     if state == GLUT_DOWN:
-        global mouse
-        global clic_correct
+        global mouse, clic_correct, pointage
         mouse = [x, y]
         pos_cible, radius = spheres[cible].project(camera)
         
@@ -290,10 +300,12 @@ def mouse_clicks(button, state, x, y):
         pos_cible[1] + radius > mouse[1] and pos_cible[1] - radius < mouse[1]):
             nextCible()
             clic_correct = True
-            print(clic_correct)
+            pointage+=1
+            if pointage == 9:
+                pointage = 0
+                nextSeq()
         else:
             clic_correct = False
-            print(clic_correct)
 
         glutPostRedisplay()
 
