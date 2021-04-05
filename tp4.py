@@ -80,7 +80,7 @@ def setCible():
 
     for i in range(nb_spheres):
         proj = spheres[i].project(camera)
-        display_2d_disc(*proj, [0,1,0])
+        display_2d_disc(*proj, [0,1,0,0])
 
     """
     proj = spheres[0].project(camera)
@@ -101,6 +101,7 @@ def setCible():
         prev_proj = spheres[index].project(camera)
         display_2d_disc(*prev_proj, [0,1,1])
     """
+
 def mousePos():
     #GetCursorPos() => returns true
     return x,y
