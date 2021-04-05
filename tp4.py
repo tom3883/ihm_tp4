@@ -52,7 +52,8 @@ def setupScene():
     glEnable(GL_DEPTH_TEST)
     glClearColor(.4, .4, .4, 1)
 
-    global spheres, nb_spheres
+    global spheres, nb_spheres, cible
+    cible = 0
     nb_spheres = 9
     spheres = create_spheres()
 
@@ -76,7 +77,7 @@ def create_spheres():
     return s
 
 
-def setCible():
+def setDiscs():
 
     for i in range(nb_spheres):
         proj = spheres[i].project(camera)
@@ -102,12 +103,8 @@ def setCible():
         display_2d_disc(*prev_proj, [0,1,1])
     """
 
-def mousePos():
-    #GetCursorPos() => returns true
-    return x,y
-
-def aCLique():
-    return True
+def isCible(sphere):
+    return sphere == spheres[cible]
 
 
 def closest_sphere(sphs, cam, m):
@@ -155,20 +152,23 @@ def display_frame():
     pass
 
 
-def display_scene(sphs):
-    '''display of the whole scene, mainly the spheres (in white)
+def display_scene():
+    '''display of the whole scene, mainly the spheres
     '''
     #TODO_TODO_TODO
     #TODO_TODO_TODO
     #TODO_TODO_TODO
     for i in spheres:
         glPushMatrix()
-        glColor(1,0,0)
+        if isCible(i):
+            glColor(1,0,0)
+        else:
+            glColor(0.6,0.6,0.6)
         glTranslate(i.position[0], i.position[1], i.position[2])
         glutSolidSphere(i.radius, 50, 50)
         glPopMatrix()
     
-    setCible()
+    setDiscs()
 
 
 def display_2d_disc(p2d, r, c):
@@ -187,8 +187,6 @@ def display_2d_disc(p2d, r, c):
     reshape_persp(w, h)
     glPopMatrix()
 
-#def remove_2d_disc(p2d, r, c):
-
 
 
 def display_bubble(sphere, pos_2d, color):
@@ -203,7 +201,6 @@ def display_bubble(sphere, pos_2d, color):
     #glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
     pass
-
 
 
 def display():
@@ -222,13 +219,10 @@ def display():
     ###############
     #Frame
     display_frame()
-    display_scene(spheres)
+    display_scene()
 
     #ind = closest_sphere(spheres, camera, mouse)
     #display_bubble(spheres[ind], mouse, [0, 2, 0, .2])
-
-    #draw_circle()
-
     glutSwapBuffers()
 
 
