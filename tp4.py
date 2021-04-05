@@ -105,6 +105,17 @@ def isCible(sphere):
     return sphere == spheres[cible]
 
 
+def nextCible():
+    global cible
+    new_cible = cible
+    if((new_cible+4) >= nb_spheres):
+        new_cible = (new_cible + 4) - nb_spheres
+    else:
+        new_cible += 4
+    print(new_cible)
+    cible = new_cible
+
+
 def closest_sphere(sphs, cam, m):
     '''Returns the index of the sphere (in list 'sphs') whose projection is the closest to the 2D position 'm'
     '''
@@ -166,7 +177,7 @@ def display_scene():
         glutSolidSphere(i.radius, 50, 50)
         glPopMatrix()
     
-    setDiscs()
+    #setDiscs()
 
 
 def display_2d_disc(p2d, r, c):
@@ -286,7 +297,7 @@ def mouse_clicks(button, state, x, y):
     
     if(pos_cible[0] - radius < mouse[0] and pos_cible[0] + radius > mouse[0] and
     pos_cible[1] + radius > mouse[1] and pos_cible[1] - radius < mouse[1]):
-        print("Clic sur cible")
+        nextCible()
     else:
         print("Clic ailleurs")
 
