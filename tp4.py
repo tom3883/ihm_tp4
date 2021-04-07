@@ -30,7 +30,8 @@ nb_spheres      = 9
 clic_correct    = False
 pointage        = 0
 seq             = 0
-ids             = [[1 ,0.5], [3 ,0.4], [2 ,0.6]]
+ids             = [[2 ,0.28], [4.5 ,0.3], [3.1 ,0.1]]
+start_time       = 0.0
 
 ################################################################################
 # SETUPS
@@ -91,6 +92,13 @@ def setDiscs():
     #0,1,0 couleur = verte
     display_2d_disc(*proj, [0,1,0])
 
+def timeElapsed():
+    end_time = time.time()
+    print(start_time)
+    print(end_time)
+    #elapsed = end_time - start_time
+    #print(str(elapsed) + " secondes")
+
 
 def isCible(sphere):
     return sphere == spheres[cible]
@@ -104,17 +112,16 @@ def nextCible():
         cible += 4
     #print(new_cible)
 
+
 def nextSeq():
     global seq, spheres
     if(seq+1 < len(ids)):
         seq += 1
     else:
         seq = 0
-    print(str(seq))
+    #print(str(seq))
     spheres = create_spheres()
 
-def timeElapsed():
-    pass
 
 def closest_sphere(sphs, cam, m):
     '''Returns the index of the sphere (in list 'sphs') whose projection is the closest to the 2D position 'm'
@@ -292,12 +299,14 @@ def mouse_clicks(button, state, x, y):
     state is in [GLUT_DOWN, GLUT_UP]
     '''
     if state == GLUT_DOWN:
-        global mouse, clic_correct, pointage
+        global mouse, clic_correct, pointage, start_time
         mouse = [x, y]
         pos_cible, radius = spheres[cible].project(camera)
         
         if(pos_cible[0] - radius < mouse[0] and pos_cible[0] + radius > mouse[0] and
         pos_cible[1] + radius > mouse[1] and pos_cible[1] - radius < mouse[1]):
+            start_time = time.time()
+            old_pointage = pointage
             nextCible()
             clic_correct = True
             pointage+=1
@@ -306,8 +315,9 @@ def mouse_clicks(button, state, x, y):
                 nextSeq()
         else:
             clic_correct = False
-
+        
         glutPostRedisplay()
+
 
 
 def mouse_active(x, y):
