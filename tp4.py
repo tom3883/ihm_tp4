@@ -5,6 +5,7 @@ import time
 import math
 from math import *
 import random
+import csv
 
 import libs.camera      as _cam
 import libs.sphere      as _sph
@@ -20,6 +21,7 @@ except:
 ################################################################################
 # GLOBAL VARS
 
+user            = None
 camera          = _cam.camera([0, 0, 10], [0, 0, 0])#main camera
 starting_time   = time.time()                       #starting time of course
 mouse           = [0, 0]                            #mouse current position
@@ -27,12 +29,15 @@ animation       = False                             #(des)activating animation (
 spheres         = []                                #list of the spheres to select
 cible           = 0
 nb_spheres      = 9
-clic_correct    = False
+clic_faux       = False
 pointage        = 0
 seq             = 0
-ids             = [[2 ,0.28], [4.5 ,0.3], [3.1 ,0.1]]
-start_time       = 0.0
+ids             = [ [1.4, 0.2, "ID3"], [2.1, 0.3, "ID3"], [2.8, 0.4, "ID3"]]
+last_click_time = None
+times           = [[]]
+errs            = [[]]
 
+print(starting_time)
 ################################################################################
 # SETUPS
 
@@ -59,8 +64,9 @@ def setupScene():
     glEnable(GL_DEPTH_TEST)
     glClearColor(.4, .4, .4, 1)
 
-    global spheres
+    global spheres, last_click_time
     spheres = create_spheres()
+    last_click_time = time.time()
 
 
 ################################################################################
@@ -92,13 +98,22 @@ def setDiscs():
     #0,1,0 couleur = verte
     display_2d_disc(*proj, [0,1,0])
 
-def timeElapsed():
-    end_time = time.time()
-    print(start_time)
-    print(end_time)
-    #elapsed = end_time - start_time
-    #print(str(elapsed) + " secondes")
+def testEnd():
 
+    with open('results.csv', mode='a', newline='') as results_file:
+
+        fields = ["nom", "technique", "ID", "temps", "erreur"]
+        results_writer = csv.DictWriter(results_file, fieldnames=fields)
+
+        for i in range(len(times)):
+            for j in range(len(times[i])):
+                results_writer.writerow({
+                    "nom": user, "technique" : "Clic classique",
+                    "ID" : ids[i][2], "temps" : str(times[i][j]),
+                    "erreur" : str(errs[i][j])
+                })
+
+    glutLeaveMainLoop()
 
 def isCible(sphere):
     return sphere == spheres[cible]
@@ -118,7 +133,7 @@ def nextSeq():
     if(seq+1 < len(ids)):
         seq += 1
     else:
-        seq = 0
+        return testEnd()
     #print(str(seq))
     spheres = create_spheres()
 
@@ -177,13 +192,13 @@ def display_scene():
     for i in spheres:
         glPushMatrix()
         if isCible(i):
-            glColor(1,0,0)
+            glColor(0,1,0)
         else:
             glColor(0.6,0.6,0.6)
         glTranslate(i.position[0], i.position[1], i.position[2])
         glutSolidSphere(i.radius, 50, 50)
         glPopMatrix()
-    
+
     #setDiscs()
 
 
@@ -299,23 +314,39 @@ def mouse_clicks(button, state, x, y):
     state is in [GLUT_DOWN, GLUT_UP]
     '''
     if state == GLUT_DOWN:
-        global mouse, clic_correct, pointage, start_time
+        global mouse, clic_faux, pointage, last_click_time, times, errs
         mouse = [x, y]
         pos_cible, radius = spheres[cible].project(camera)
-        
+
+        #Calcul du temps entre 2 clics
+        click_time = time.time()
+
+        #Temps écoulé entre 2 sphères
+        time_elapsed = click_time - last_click_time
+
+        #Temps du dernier clic mis à jour
+        last_click_time = click_time
+
+        times[seq].append(time_elapsed)
+
         if(pos_cible[0] - radius < mouse[0] and pos_cible[0] + radius > mouse[0] and
         pos_cible[1] + radius > mouse[1] and pos_cible[1] - radius < mouse[1]):
-            start_time = time.time()
-            old_pointage = pointage
-            nextCible()
-            clic_correct = True
-            pointage+=1
-            if pointage == 9:
-                pointage = 0
-                nextSeq()
+            clic_faux = False
         else:
-            clic_correct = False
-        
+            clic_faux = True
+
+        errs[seq].append(clic_faux)
+        nextCible()
+        pointage+=1
+
+        if pointage == 9:
+            print(times)
+            print(errs)
+            errs.append([])
+            times.append([])
+            pointage = 0
+            nextSeq()
+
         glutPostRedisplay()
 
 
@@ -342,6 +373,10 @@ def mouse_passive(x, y):
 print("Commands:")
 print("\ta:\tanimation")
 print("\tesc:\texit")
+
+user = input("Quel est votre nom : ")
+
+random.shuffle(ids)
 
 glutInit(sys.argv)
 glutInitDisplayString(b'double rgba depth')
