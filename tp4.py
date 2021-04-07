@@ -114,7 +114,7 @@ def testEnd():
                     "ID" : ids[i][2], "temps" : str(times[i][j]),
                     "erreur" : str(errs[i][j])
                 })
-    os._exit(os.EX_OK)
+                
     glutLeaveMainLoop()
 
 def isCible(sphere):
