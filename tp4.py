@@ -102,7 +102,7 @@ def setDiscs():
 
 def testEnd():
 
-    with open('results.csv', mode='a', newline='') as results_file:
+    with open('results.csv', mode='w', newline='') as results_file:
 
         fields = ["nom", "technique", "ID", "temps", "erreur"]
         results_writer = csv.DictWriter(results_file, fieldnames=fields)
@@ -114,7 +114,7 @@ def testEnd():
                     "ID" : ids[i][2], "temps" : str(times[i][j]),
                     "erreur" : str(errs[i][j])
                 })
-
+    os._exit(os.EX_OK)
     glutLeaveMainLoop()
 
 def isCible(sphere):
