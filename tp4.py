@@ -31,11 +31,13 @@ cible           = 0
 nb_spheres      = 9
 clic_faux       = False
 pointage        = 0
-seq             = 0
-ids             = [ [1.4, 0.2, "ID3"], [2.1, 0.3, "ID3"], [2.8, 0.4, "ID3"]	, [3.5, 0.5, "ID3"], [4.2, 0.6, "ID3"],
-                  [4.5 ,0.3, "ID4"], [4, 0.2666, "ID4"], [3, 0.2, "ID4"], [2, 0.1333, "ID4"], [3.5, 0.2333, "ID4"],
-                  [3.1 ,0.1, "ID5"], [4.65, 0.15, "ID5"], [3.875, 0.125, "ID5"], [4.70, 0.1516, "ID5"], [4.80, 0.1548, "ID5"] ]
+seq             = 0 #0 à len(ids)
+ids             = [ #[1.4, 0.2, "ID3"], [2.1, 0.3, "ID3"], [2.8, 0.4, "ID3"]	, [3.5, 0.5, "ID3"], [4.2, 0.6, "ID3"],
+                  #[4.5 ,0.3, "ID4"], [4, 0.2666, "ID4"], [3, 0.2, "ID4"], [2, 0.1333, "ID4"], [3.5, 0.2333, "ID4"],
+                  #[3.1 ,0.1, "ID5"], [4.65, 0.15, "ID5"], [3.875, 0.125, "ID5"], 
+                  [4.70, 0.1516, "ID5"], [4.80, 0.1548, "ID5"] ]
 last_click_time = None #None car on demande l'username avant
+technique       = 1
 times           = [[]]
 errs            = [[]]
 
@@ -45,7 +47,6 @@ print(starting_time)
 
 def stopApplication():
     sys.exit(0)
-
 
 def setupScene():
     '''OpenGL and Scene objects settings
@@ -77,9 +78,7 @@ def setupScene():
 def create_spheres():
     '''Create the spheres to select: 3d position and radius
     '''
-    #TODO_TODO_TODO
-    #TODO_TODO_TODO
-    #TODO_TODO_TODO
+
     posx, posy = 0,0
     radius = ids[seq][0]
     s = []
@@ -117,6 +116,7 @@ def testEnd():
                 
     glutLeaveMainLoop()
 
+
 def isCible(sphere):
     return sphere == spheres[cible]
 
@@ -129,11 +129,13 @@ def nextCible():
         cible += 4
     #print(new_cible)
 
-
 def nextSeq():
-    global seq, spheres
+    global seq, spheres, technique
     if(seq+1 < len(ids)):
         seq += 1
+    elif seq == len(ids)-1 and technique == 1:
+        seq = 0
+        technique = 2
     else:
         return testEnd()
     #print(str(seq))
@@ -143,9 +145,7 @@ def nextSeq():
 def closest_sphere(sphs, cam, m):
     '''Returns the index of the sphere (in list 'sphs') whose projection is the closest to the 2D position 'm'
     '''
-    #TODO_TODO_TODO
-    #TODO_TODO_TODO
-    #TODO_TODO_TODO
+
     if not len(sphs):
         raise ValueError("No Sphere.")
 
@@ -168,9 +168,7 @@ def closest_sphere(sphs, cam, m):
 def display_frame():
     '''Display an orthonormal frame + a wire cube
     '''
-    #TODO_TODO_TODO
-    #TODO_TODO_TODO
-    #TODO_TODO_TODO
+
     glColor(1,1,1)
     glDisable(GL_LIGHTING)
     glutWireCube(10)
@@ -187,9 +185,7 @@ def display_frame():
 def display_scene():
     '''display of the whole scene, mainly the spheres
     '''
-    #TODO_TODO_TODO
-    #TODO_TODO_TODO
-    #TODO_TODO_TODO
+
     for i in spheres:
         glPushMatrix()
         if isCible(i):
@@ -252,9 +248,10 @@ def display():
     display_frame()
     display_scene()
 
+    if technique == 2 :
+        ind = closest_sphere(spheres, camera, mouse)
+        display_bubble(spheres[ind], mouse, [0, 2, 0, .2])
 
-    ind = closest_sphere(spheres, camera, mouse)
-    display_bubble(spheres[ind], mouse, [0, 2, 0, .2])
     glutSwapBuffers()
 
 
