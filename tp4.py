@@ -147,12 +147,11 @@ def closest_sphere(sphs, cam, m):
     #TODO_TODO_TODO
     #TODO_TODO_TODO
     if not len(sphs):
-        raise ValueError("No Sphere")
+        raise ValueError("No Sphere.")
 
     mx, my = m
     select_dist = None
     index = None
-
     for i, sphere in enumerate(sphs):
         (wx, wy, wz), radius = sphere.project(cam)
         dx = mx - wx
@@ -161,7 +160,7 @@ def closest_sphere(sphs, cam, m):
         if select_dist is None or dist < select_dist:
             select_dist = dist
             index = i
-    return i
+    return index
 
 ################################################################################
 # DISPLAY FUNCS
@@ -226,14 +225,13 @@ def display_bubble(sphere, pos_2d, color):
     '''display the bubble, i.e display a 2d transparent disc that encompasses the mouse and
         the 2d projection of the sphere
     '''
-    #TODO_TODO_TODO
-    #TODO_TODO_TODO
-    #TODO_TODO_TODO
-    #glEnable(GL_BLEND)
-    #glColor(*color)
-    #glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-
-    pass
+    vector = _geo.vector2D(pos_2d, [sphere.proj_position[0], sphere.proj_position[1]])
+    normalizeV = _geo.normalize2D(vector)
+    diametre = _geo.norm2D(vector) + sphere.proj_radius
+    radius_bubble = diametre / 2
+    newPoint = [pos_2d[0]+normalizeV[0]*radius_bubble,
+                pos_2d[1]+normalizeV[1]*radius_bubble]
+    display_2d_disc(newPoint, radius_bubble, [0.2,0.5,0.9, 0.5])
 
 
 def display():
@@ -255,8 +253,8 @@ def display():
     display_scene()
 
 
-    #ind = closest_sphere(spheres, camera, mouse)
-    #display_bubble(spheres[ind], mouse, [0, 2, 0, .2])
+    ind = closest_sphere(spheres, camera, mouse)
+    display_bubble(spheres[ind], mouse, [0, 2, 0, .2])
     glutSwapBuffers()
 
 
