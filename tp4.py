@@ -35,7 +35,7 @@ seq             = 0
 ids             = [ [1.4, 0.2, "ID3"], [2.1, 0.3, "ID3"], [2.8, 0.4, "ID3"]	, [3.5, 0.5, "ID3"], [4.2, 0.6, "ID3"],
                   [4.5 ,0.3, "ID4"], [4, 0.2666, "ID4"], [3, 0.2, "ID4"], [2, 0.1333, "ID4"], [3.5, 0.2333, "ID4"],
                   [3.1 ,0.1, "ID5"], [4.65, 0.15, "ID5"], [3.875, 0.125, "ID5"], [4.70, 0.1516, "ID5"], [4.80, 0.1548, "ID5"] ]
-last_click_time = None
+last_click_time = None #None car on demande l'username avant
 times           = [[]]
 errs            = [[]]
 
@@ -68,7 +68,7 @@ def setupScene():
 
     global spheres, last_click_time
     spheres = create_spheres()
-    last_click_time = time.time()
+    last_click_time = time.time() #initialisation dès que l'username est remplit
 
 
 ################################################################################
