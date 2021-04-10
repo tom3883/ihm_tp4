@@ -32,10 +32,11 @@ nb_spheres      = 9
 clic_faux       = False
 pointage        = 0
 seq             = 0 #0 à len(ids)
-ids             = [ #[1.4, 0.2, "ID3"], [2.1, 0.3, "ID3"], [2.8, 0.4, "ID3"]	, [3.5, 0.5, "ID3"], [4.2, 0.6, "ID3"],
-                  #[4.5 ,0.3, "ID4"], [4, 0.2666, "ID4"], [3, 0.2, "ID4"], [2, 0.1333, "ID4"], [3.5, 0.2333, "ID4"],
-                  #[3.1 ,0.1, "ID5"], [4.65, 0.15, "ID5"], [3.875, 0.125, "ID5"], 
-                  [4.70, 0.1516, "ID5"], [4.80, 0.1548, "ID5"] ]
+idSeq           = 0
+ids             = [ [1.4, 0.2, 3], [2.1, 0.3, 3], [2.8, 0.4, 3]	, [3.5, 0.5, 3], [4.2, 0.6, 3],
+                  [4.5 ,0.3, 4], [4, 0.2666, 4], [3, 0.2, 4], [2, 0.1333, 4], [3.5, 0.2333, 4],
+                  [3.1 ,0.1, 5], [4.65, 0.15, 5], [3.875, 0.125, 5], 
+                  [4.70, 0.1516, 5], [4.80, 0.1548, 5] ]
 last_click_time = None #None car on demande l'username avant
 technique       = 1
 times           = [[]]
@@ -106,14 +107,19 @@ def testEnd():
         fields = ["nom", "technique", "ID", "temps", "erreur"]
         results_writer = csv.DictWriter(results_file, fieldnames=fields)
 
+        idIndex=0
+
         for i in range(len(times)):
+            if idIndex == 15:
+                idIndex=0
             for j in range(len(times[i])):
                 results_writer.writerow({
-                    "nom": user, "technique" : "Clic classique",
-                    "ID" : ids[i][2], "temps" : str(times[i][j]),
+                    "nom": user, "technique" : str(technique),
+                    "ID" : str(ids[idIndex][2]), "temps" : str(times[i][j]),
                     "erreur" : str(errs[i][j])
                 })
-                
+            idIndex += 1
+
     glutLeaveMainLoop()
 
 
@@ -130,12 +136,16 @@ def nextCible():
     #print(new_cible)
 
 def nextSeq():
-    global seq, spheres, technique
+    global seq, spheres, technique, idSeq
+
     if(seq+1 < len(ids)):
         seq += 1
+        idSeq += 1
+
     elif seq == len(ids)-1 and technique == 1:
-        seq = 0
         technique = 2
+        seq = 0
+        idSeq += 1
     else:
         return testEnd()
     #print(str(seq))
@@ -317,24 +327,32 @@ def mouse_clicks(button, state, x, y):
 
         #Calcul du temps entre 2 clics
         click_time = time.time()
-
         #Temps écoulé entre 2 sphères
         time_elapsed = click_time - last_click_time
-
         #Temps du dernier clic mis à jour
         last_click_time = click_time
 
-        times[seq].append(time_elapsed)
+        times[idSeq].append(time_elapsed)
 
-        if(pos_cible[0] - radius < mouse[0] and pos_cible[0] + radius > mouse[0] and
-        pos_cible[1] + radius > mouse[1] and pos_cible[1] - radius < mouse[1]):
-            clic_faux = False
-        else:
-            clic_faux = True
+        if(technique == 1):
+            if(pos_cible[0] - radius < mouse[0] and pos_cible[0] + radius > mouse[0] and
+            pos_cible[1] + radius > mouse[1] and pos_cible[1] - radius < mouse[1]):
+                clic_faux = False
+            else:
+                clic_faux = True
+        
+        elif(technique == 2):
+            ind = closest_sphere(spheres, camera, mouse)
+            if(isCible(spheres[ind])):
+                clic_faux = False
+            else:
+                clic_faux = True
+            
 
-        errs[seq].append(clic_faux)
+        errs[idSeq].append(clic_faux)
         nextCible()
         pointage+=1
+
 
         if pointage == 9:
             print(times)
