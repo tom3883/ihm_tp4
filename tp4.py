@@ -330,7 +330,7 @@ def mouse_clicks(button, state, x, y):
         #Calcul du temps entre 2 clics
         click_time = time.time()
         #Temps écoulé entre 2 sphères
-        time_elapsed = click_time - last_click_time
+        time_elapsed = (click_time - last_click_time) * 1000
         #Temps du dernier clic mis à jour
         last_click_time = click_time
 
