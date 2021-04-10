@@ -108,10 +108,12 @@ def testEnd():
         results_writer = csv.DictWriter(results_file, fieldnames=fields)
 
         idIndex=0
+        technique = 1
 
         for i in range(len(times)):
             if idIndex == 15:
                 idIndex=0
+                technique=2
             for j in range(len(times[i])):
                 results_writer.writerow({
                     "nom": user, "technique" : str(technique),
