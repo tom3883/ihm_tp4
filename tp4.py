@@ -322,7 +322,7 @@ def mouse_clicks(button, state, x, y):
     button is in [GLUT_LEFT_BUTTON, GLUT_MIDDLE_BUTTON, GLUT_RIGHT_BUTTON],
     state is in [GLUT_DOWN, GLUT_UP]
     '''
-    if state == GLUT_DOWN:
+    if state == GLUT_DOWN and button == GLUT_LEFT_BUTTON:
         global mouse, clic_faux, pointage, last_click_time, times, errs
         mouse = [x, y]
         pos_cible, radius = spheres[cible].project(camera)
