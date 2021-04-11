@@ -100,6 +100,7 @@ def setDiscs():
     #0,1,0 couleur = verte
     display_2d_disc(*proj, [0,1,0])
 
+
 def testEnd():
 
     with open('results.csv', mode='a', newline='') as results_file:
@@ -135,7 +136,7 @@ def nextCible():
         cible = (cible + 4) - nb_spheres
     else:
         cible += 4
-    #print(new_cible)
+
 
 def nextSeq():
     global seq, spheres, technique, idSeq
@@ -150,7 +151,7 @@ def nextSeq():
         idSeq += 1
     else:
         return testEnd()
-    #print(str(seq))
+
     spheres = create_spheres()
 
 
@@ -208,7 +209,6 @@ def display_scene():
         glutSolidSphere(i.radius, 50, 50)
         glPopMatrix()
 
-    #setDiscs()
 
 
 def display_2d_disc(p2d, r, c):
@@ -234,12 +234,12 @@ def display_bubble(sphere, pos_2d, color):
         the 2d projection of the sphere
     '''
     vector = _geo.vector2D(pos_2d, [sphere.proj_position[0], sphere.proj_position[1]])
-    normalizeV = _geo.normalize2D(vector)
-    diametre = _geo.norm2D(vector) + sphere.proj_radius
-    radius_bubble = diametre / 2
-    newPoint = [pos_2d[0]+normalizeV[0]*radius_bubble,
-                pos_2d[1]+normalizeV[1]*radius_bubble]
-    display_2d_disc(newPoint, radius_bubble, [0.2,0.5,0.9, 0.5])
+    nV = _geo.normalize2D(vector)
+    d = _geo.norm2D(vector) + sphere.proj_radius
+    rad_bubble = d / 2
+    nPoint = [pos_2d[0]+nV[0]*rad_bubble,
+                pos_2d[1]+nV[1]*rad_bubble]
+    display_2d_disc(nPoint, rad_bubble, [0.2,0.5,0.9, 0.5])
 
 
 def display():
@@ -357,8 +357,6 @@ def mouse_clicks(button, state, x, y):
 
 
         if pointage == 9:
-            print(times)
-            print(errs)
             errs.append([])
             times.append([])
             pointage = 0
